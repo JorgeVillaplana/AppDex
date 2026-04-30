@@ -1,0 +1,355 @@
+/* ── Reset y variables ─────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-fondo: #f5f5f5;
+  --color-superficie: #ffffff;
+  --color-borde: #e0e0e0;
+  --color-texto: #1a1a1a;
+  --color-texto-suave: #666666;
+  --color-primario: #2563eb;
+  --color-peligro: #dc2626;
+  --color-seleccionado: #eff6ff;
+  --radio: 6px;
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Cabecera ───────────────────────────────────────────── */
+header {
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--sombra);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+header h1 span {
+  color: var(--color-primario);
+}
+
+.header-stats {
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.header-stats .separator {
+  opacity: 0.5;
+}
+
+/* ── Layout principal ───────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Panel lateral ──────────────────────────────────────── */
+.sidebar {
+  background: var(--color-superficie);
+  border-right: 1px solid var(--color-borde);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-filtros {
+  display: flex;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.sidebar-filtros a {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: var(--color-texto-suave);
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.sidebar-filtros a.activo {
+  color: var(--color-primario);
+  border-bottom-color: var(--color-primario);
+}
+
+.sidebar-lista {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sidebar-lista-vacia {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+}
+
+.item-lista {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--color-borde);
+  text-decoration: none;
+  color: var(--color-texto);
+  transition: background 0.1s;
+}
+
+.item-lista:hover {
+  background: var(--color-fondo);
+}
+
+.item-lista.activo {
+  background: var(--color-seleccionado);
+  border-left: 3px solid var(--color-primario);
+}
+
+.item-lista-nombre {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-lista-url {
+  font-size: 0.75rem;
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* ── Panel principal ────────────────────────────────────── */
+.main {
+  overflow-y: auto;
+  padding: 1.5rem;
+  height: 100%;
+}
+
+.sin-herramienta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-texto-suave);
+  font-size: 1rem;
+}
+
+/* ── Formulario ─────────────────────────────────────────── */
+.form-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.form-cabecera-info h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.form-cabecera-info a {
+  font-size: 0.8rem;
+  color: var(--color-primario);
+  word-break: break-all;
+}
+
+.form-acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn {
+  padding: 0.5rem 1.1rem;
+  border: none;
+  border-radius: var(--radio);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn-aprobar {
+  background: var(--color-primario);
+  color: #fff;
+}
+
+.btn-omitir {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde);
+}
+
+/* ── Campos del formulario ──────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.campo.ancho-completo {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+  transition: border-color 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primario);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── Multiselect ────────────────────────────────────────── */
+.multiselect {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  min-height: 42px;
+}
+
+.multiselect-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.multiselect-chip input[type="checkbox"] {
+  display: none;
+}
+
+.multiselect-chip label {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-borde);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  transition:
+    background 0.1s,
+    border-color 0.1s;
+  user-select: none;
+}
+
+.multiselect-chip input[type="checkbox"]:checked + label {
+  background: var(--color-primario);
+  border-color: var(--color-primario);
+  color: #fff;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--color-borde);
+    max-height: 220px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .campo.ancho-completo {
+    grid-column: 1;
+  }
+
+  .form-cabecera {
+    flex-direction: column;
+  }
+
+  .form-acciones {
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1;
+  }
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppDex Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>App<span>Dex</span> Dashboard</h1>
+    <div class="header-stats">
+        <span id="herramientas-vista">{{ lista|length }} en vista</span>
+        <span class="separator">•</span>
+        <span id="contador-sesion">0 procesadas</span>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- ── Panel lateral ── -->
+    <aside class="sidebar">
+        <nav class="sidebar-filtros">
+            <a href="{{ url_for('index', estado='Pendiente') }}"
+               class="{{ 'activo' if estado == 'Pendiente' }}">Pendientes</a>
+            <a href="{{ url_for('index', estado='Omitida') }}"
+               class="{{ 'activo' if estado == 'Omitida' }}">Omitidas</a>
+        </nav>
+
+        <div class="sidebar-lista">
+            {% if lista %}
+                {% for item in lista %}
+                <a href="{{ url_for('index', estado=estado, id=item.id) }}"
+                   class="item-lista {{ 'activo' if herramienta and herramienta.id == item.id }}">
+                    <div class="item-lista-nombre">{{ item.nombre or '(sin nombre)' }}</div>
+                    <div class="item-lista-url">{{ item.url or '' }}</div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <p class="sidebar-lista-vacia">No hay herramientas {{ estado.lower() }}s.</p>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- ── Panel principal ── -->
+    <main class="main">
+        {% if herramienta %}
+
+        <div class="form-cabecera">
+            <div class="form-cabecera-info">
+                <h2>{{ herramienta.nombre or '(sin nombre)' }}</h2>
+                {% if herramienta.url %}
+                <a href="{{ herramienta.url }}" target="_blank" rel="noopener">{{ herramienta.url }}</a>
+                {% endif %}
+            </div>
+            <div class="form-acciones">
+                <button class="btn btn-omitir" onclick="submitForm('omitir')">Omitir</button>
+                <button class="btn btn-aprobar" onclick="submitForm('aprobar')">Aprobar</button>
+            </div>
+        </div>
+
+        <form id="form-herramienta" method="POST">
+            <input type="hidden" name="estado" value="{{ estado }}">
+            <div class="form-grid">
+
+                <!-- Nombre -->
+                <div class="campo">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre"
+                           value="{{ herramienta.nombre or '' }}">
+                </div>
+
+                <!-- URL -->
+                <div class="campo">
+                    <label for="url">URL</label>
+                    <input type="text" id="url" name="url"
+                           value="{{ herramienta.url or '' }}">
+                </div>
+
+                <!-- Tipo -->
+                <div class="campo">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" name="tipo">
+                        {% for item in catalogos.tipo %}
+                        <option value="{{ item.valor }}"
+                            {{ 'selected' if herramienta.tipo == item.valor }}>
+                            {{ item.valor }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Vigencia -->
+                <div class="campo">
+                    <label for="vigencia">Vigencia</label>
+                    <select id="vigencia" name="vigencia">
+                        {% for item in catalogos.vigencia %}
+                        <option value="{{ item.valor }}"
+                            {{ 'selected' if herramienta.vigencia == item.valor }}>
+                            {{ item.valor }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Opensource -->
+                <div class="campo">
+                    <label for="opensource">Open Source</label>
+                    <select id="opensource" name="opensource">
+                        {% for item in catalogos.opensource %}
+                        <option value="{{ item.valor }}"
+                            {{ 'selected' if herramienta.opensource == item.valor }}>
+                            {{ item.valor }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Requiere registro -->
+                <div class="campo">
+                    <label for="requiere_registro">Requiere registro</label>
+                    <select id="requiere_registro" name="requiere_registro">
+                        <option value="0" {{ 'selected' if herramienta.requiere_registro == 0 }}>No</option>
+                        <option value="1" {{ 'selected' if herramienta.requiere_registro == 1 }}>Sí</option>
+                    </select>
+                </div>
+
+                <!-- Probada -->
+                <div class="campo">
+                    <label for="probada">Probada</label>
+                    <select id="probada" name="probada">
+                        <option value="0" {{ 'selected' if herramienta.probada == 0 }}>No</option>
+                        <option value="1" {{ 'selected' if herramienta.probada == 1 }}>Sí</option>
+                    </select>
+                </div>
+
+                <!-- Versión -->
+                <div class="campo">
+                    <label for="version_estable">Versión estable</label>
+                    <input type="text" id="version_estable" name="version_estable"
+                           value="{{ herramienta.version_estable or '' }}">
+                </div>
+
+                <!-- Fecha versión -->
+                <div class="campo">
+                    <label for="fecha_version">Fecha versión</label>
+                    <input type="date" id="fecha_version" name="fecha_version"
+                           value="{{ herramienta.fecha_version or '' }}">
+                </div>
+
+                <!-- Fecha revisión -->
+                <div class="campo">
+                    <label for="fecha_revision">Fecha revisión</label>
+                    <input type="date" id="fecha_revision" name="fecha_revision"
+                           value="{{ herramienta.fecha_revision or '' }}">
+                </div>
+
+                <!-- Categoría (multiselect) -->
+                <div class="campo ancho-completo">
+                    <label>Categoría</label>
+                    <div class="multiselect">
+                        {% for item in catalogos.categoria %}
+                        <div class="multiselect-chip">
+                            <input type="checkbox" id="cat_{{ loop.index }}"
+                                   name="categoria" value="{{ item.valor }}"
+                                   {{ 'checked' if item.valor in herramienta.categoria }}>
+                            <label for="cat_{{ loop.index }}">{{ item.valor }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Plataforma (multiselect) -->
+                <div class="campo ancho-completo">
+                    <label>Plataforma</label>
+                    <div class="multiselect">
+                        {% for item in catalogos.plataforma %}
+                        <div class="multiselect-chip">
+                            <input type="checkbox" id="plat_{{ loop.index }}"
+                                   name="plataforma" value="{{ item.valor }}"
+                                   {{ 'checked' if item.valor in herramienta.plataforma }}>
+                            <label for="plat_{{ loop.index }}">{{ item.valor }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Modelo de negocio (multiselect) -->
+                <div class="campo ancho-completo">
+                    <label>Modelo de negocio</label>
+                    <div class="multiselect">
+                        {% for item in catalogos.modelo_negocio %}
+                        <div class="multiselect-chip">
+                            <input type="checkbox" id="mn_{{ loop.index }}"
+                                   name="modelo_negocio" value="{{ item.valor }}"
+                                   {{ 'checked' if item.valor in herramienta.modelo_negocio }}>
+                            <label for="mn_{{ loop.index }}">{{ item.valor }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="campo ancho-completo">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion"
+                              rows="3">{{ herramienta.descripcion or '' }}</textarea>
+                </div>
+
+                <!-- Notas -->
+                <div class="campo ancho-completo">
+                    <label for="notas">Notas</label>
+                    <textarea id="notas" name="notas"
+                              rows="2">{{ herramienta.notas or '' }}</textarea>
+                </div>
+
+            </div><!-- /form-grid -->
+        </form>
+
+        {% else %}
+        <div class="sin-herramienta">
+            <p>No hay herramientas que mostrar en este momento.</p>
+        </div>
+        {% endif %}
+    </main>
+
+</div><!-- /layout -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
